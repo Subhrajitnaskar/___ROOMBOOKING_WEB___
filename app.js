@@ -4,91 +4,117 @@ const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
+const ejsMate = require("ejs-mate");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
-main()
-  .then(() => {
-    console.log("connected to DB");
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
+// Database Connection
 async function main() {
   await mongoose.connect(MONGO_URL);
+  console.log("Connected to MongoDB");
 }
 
+main().catch((err) => console.log(err));
+
+// Middlewares
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
+app.engine('ejs', ejsMate);
 
+// Home Route
 app.get("/", (req, res) => {
-  res.send("Hi, I am root");
+  res.send("Hi, I am Root");
 });
 
-//Index Route
+// Index route
 app.get("/listings", async (req, res) => {
-  const allListings = await Listing.find({});
-  res.render("/listings/index.ejs", { allListings });
+  try {
+    const allListings = await Listing.find({});
+    res.render("listings/index", { allListings });
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
 
-//New Route
+// New route
 app.get("/listings/new", (req, res) => {
-  res.render("listings/new.ejs");
+  res.render("listings/new");
 });
 
-//Show Route
+// Show riute
 app.get("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/show.ejs", { listing });
+  try {
+    const { id } = req.params;
+    const listing = await Listing.findById(id);
+
+    res.render("listings/show", { listing });
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
 
-//Create Route
+// Create route
 app.post("/listings", async (req, res) => {
-  const newListing = new Listing(req.body.listing);
-  await newListing.save();
-  res.redirect("/listings");
+  try {
+    const newListing = new Listing(req.body.listing);
+    await newListing.save();
+
+    res.redirect("/listings");
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
 
-//Edit Route
+// edit route
 app.get("/listings/:id/edit", async (req, res) => {
-  let { id } = req.params;
-  const listing = await Listing.findById(id);
-  res.render("listings/edit.ejs", { listing });
+  try {
+    const { id } = req.params;
+    const listing = await Listing.findById(id);
+
+    res.render("listings/edit", { listing });
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
 
-//Update Route
+// update route
 app.put("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  await Listing.findByIdAndUpdate(id, { ...req.body.listing });
-  res.redirect(`/listings/${id}`);
+  try {
+    const { id } = req.params;
+
+    await Listing.findByIdAndUpdate(id, {
+      ...req.body.listing,
+    });
+
+    res.redirect(`/listings/${id}`);
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
 
-//Delete Route
+// Delete route
 app.delete("/listings/:id", async (req, res) => {
-  let { id } = req.params;
-  let deletedListing = await Listing.findByIdAndDelete(id);
-  console.log(deletedListing);
-  res.redirect("/listings");
+  try {
+    const { id } = req.params;
+
+    await Listing.findByIdAndDelete(id);
+
+    res.redirect("/listings");
+  } catch (err) {
+    console.log(err);
+    res.send(err.message);
+  }
 });
 
-// app.get("/testListing", async (req, res) => {
-//   let sampleListing = new Listing({
-//     title: "My New Villa",
-//     description: "By the beach",
-//     price: 1200,
-//     location: "Calangute, Goa",
-//     country: "India",
-//   });
-
-//   await sampleListing.save();
-//   console.log("sample was saved");
-//   res.send("successful testing");
-// });
-
+// Server
 app.listen(8080, () => {
-  console.log("server is listening to port 8080");
+  console.log("Server is listening on port 8080");
 });
