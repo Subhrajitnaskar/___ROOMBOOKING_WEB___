@@ -115,6 +115,10 @@ app.delete("/listings/:id", async (req, res) => {
   }
 });
 
+app.use((err, req, res, next) => {
+  res.send("something went wrong")
+})
+
 // Server
 app.listen(8080, () => {
   console.log("Server is listening on port 8080");

@@ -5,7 +5,12 @@
 
     <h3 class="mb-4">Edit your Listing</h3>
 
-    <form method="POST" action="/listings/<%= listing._id %>?_method=PUT">
+    <form
+      method="POST"
+      action="/listings/<%= listing._id %>?_method=PUT"
+      novalidate
+      class="needs-validation"
+    >
 
       <div class="mb-3">
         <label for="title" class="form-label">Title</label>
@@ -14,7 +19,11 @@
           value="<%= listing.title %>"
           type="text"
           class="form-control"
+          required
         />
+        <div class="valid-feedback">
+          Title Looks Good!
+        </div>
       </div>
 
       <div class="mb-3">
@@ -23,7 +32,11 @@
           name="listing[description]"
           class="form-control"
           rows="4"
+          required
         ><%= listing.description %></textarea>
+        <div class="invalid-feedback">
+          Please enter a short description.
+        </div>
       </div>
 
       <div class="mb-3">
@@ -45,7 +58,11 @@
             value="<%= listing.price %>"
             type="number"
             class="form-control"
+            required
           />
+          <div class="invalid-feedback">
+            Please enter a valid price.
+          </div>
         </div>
 
         <div class="mb-3 col-md-8">
@@ -55,7 +72,11 @@
             value="<%= listing.country %>"
             type="text"
             class="form-control"
+            required
           />
+          <div class="invalid-feedback">
+            Please enter the country name.
+          </div>
         </div>
 
       </div>
@@ -67,14 +88,21 @@
           value="<%= listing.location %>"
           type="text"
           class="form-control"
+          required
         />
+        <div class="invalid-feedback">
+          Please enter the location name.
+        </div>
       </div>
 
-      <!-- <br /><br /> -->
-      <button class="btn btn-dark edit-btn mt-3">Edit</button>
-       <br /><br />
+      <button class="btn btn-dark edit-btn mt-3">
+        Edit
+      </button>
+
+      <br><br>
 
     </form>
 
   </div>
 </div>
+<script src="/js/script.js"></script>
